@@ -5,14 +5,14 @@ def main():
   while escolha !=8:
    os.system("clear")
    escolha = int(input('''Escolha o Desafio: 
-   1. Desafio 1
-   2. Desafio 2
-   3. Desafio 3
-   4. Desafio 4
-   5. Desafio 5
-   6. Desafio 6
-   7. Desafio 7
-   -> '''))
+1. Desafio 1
+2. Desafio 2
+3. Desafio 3
+4. Desafio 4
+5. Desafio 5
+6. Desafio 6
+7. Desafio 7
+-> '''))
    match(escolha):
       case 1: d1()
       case 2: d2()
@@ -39,8 +39,8 @@ def d2():
    print('''      DESAFIO 2
         ''')
 
-   num1 = int(input("Digite um número: "))
-   num2 = int(input("Digite outro número: "))
+   num1 = float(input("Digite um número: "))
+   num2 = float(input("Digite outro número: "))
    if num1 > num2:
       print(f"Número: {num1} é maior que {num2}")
    elif num1 == num2:
@@ -86,7 +86,7 @@ def d5():
    emaior = 0
    eigual = 1 
    for i in range(numero):
-      n = int(input(f"Digite o {i+1}° número: "))
+      n = float(input(f"Digite o {i+1}° número: "))
       if n > emaior:
          emaior = n
       elif n == emaior:
@@ -102,10 +102,10 @@ def d6():
    print('''      DESAFIO 6
         ''') 
    turno = input('''Qual seu turno?
-   M. Matutino
-   V. Vespertino
-   N. Noturno                 
-   ''')
+M. Matutino
+V. Vespertino
+N. Noturno                 
+''')
    match turno.lower():
       case "m":
          print("Bom dia!")
@@ -120,25 +120,25 @@ def d7():
         ''')
    nivel_suspeito = 0
    p1 = int(input('''Telefonou para a vítima?
-   1. Sim
-   2. Não
-   -> '''))
+1. Sim
+2. Não
+-> '''))
    p2 = int(input('''Esteve no local do crime?
-   1. Sim
-   2. Não
-   -> '''))
+1. Sim
+2. Não
+-> '''))
    p3 = int(input('''Mora perto da vítima?
-   1. Sim
-   2. Não
-   -> '''))
+1. Sim
+2. Não
+-> '''))
    p4 = int(input('''Devia para a vítima?
-   1. Sim
-   2. Não
-   -> '''))
+1. Sim
+2. Não
+-> '''))
    p5 = int(input('''Já trabalhou com a vítima?
-   1. Sim
-   2. Não
-   -> '''))
+1. Sim
+2. Não
+-> '''))
    if p1 == 1:
       nivel_suspeito += 1
    if p2 == 1:
