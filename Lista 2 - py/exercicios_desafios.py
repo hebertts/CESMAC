@@ -1,19 +1,21 @@
 import os
 def main():
     escolha = 0
-    while escolha != 4:
+    while escolha != 5:
         os.system("clear")
         escolha = int(input('''Escolha o Desafio: 
 1. Desafio 1
 2. Desafio 2
 3. Desafio 3
 4. Desafio 4
+5. Desafio 5
 -> '''))
         match(escolha):
             case 1: d1()
             case 2: d2()
             case 3: d3()
             case 4: d4()
+            case 5: d5()
             case _: print("Valor inválido")
 
 def d1():
@@ -92,4 +94,13 @@ def d4():
     pessoas["estado_civil"] = estado_civil_digitado
     for chave,valor in pessoas.items():
         print(f"{chave}: {valor}")
+def d5():
+     eprimo = int(input("Digite um número inteiro: "))
+     numero_divisor = 0 
+     for i in range(1,eprimo+1):
+        if eprimo % i == 0:
+            numero_divisor += 1
+
+     eprimo = "É primo" if numero_divisor == 2  else "Não é primo" 
+     print(eprimo)
 main()
