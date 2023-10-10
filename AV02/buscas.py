@@ -43,3 +43,9 @@ def verificar_saldo(saldo):
         except ValueError:
             print("Saldo inválido. Certifique-se de usar apenas números.")
             saldo = input("Digite seu saldo (apenas números): ")
+
+def encontrar_conta(contas, numero_conta):
+    for conta in contas:
+        if conta["conta"] == numero_conta:
+            return conta
+    return None

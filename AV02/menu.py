@@ -3,9 +3,9 @@ import banco
 import people
 
 escolha = 0  # Inicialize a variável escolha
-
+cadastro={}
 while escolha != 7:
-    os.system("clear")
+    os.system("cls")
     escolha = int(input('''====================== MENU =======================
  1. Fazer cadastro
  2. Criar Conta

@@ -3,17 +3,12 @@ LIMITE_SAQUE = 5
 import buscas
 def deposito(cadastro):
     cpf_digitado, busca = buscas.pesquisar_cpf(cadastro)
-    if not busca:
-        print("CPF não possui cadastro")
+    conta_digitada = input("Digite o número da conta: ")
+    conta = buscas.encontrar_conta(busca["conta"], conta_digitada)
+    if not conta:
+        print("Conta não encontrada")
         input("Pressione enter para continuar_")
     else:
-        conta_digitada = input("Digite o número da conta: ")
-        conta = encontrar_conta(busca["contas"], conta_digitada)
-        if not conta:
-            print("Conta não encontrada")
-            input("Pressione enter para continuar_")
- 
-        else:
             valor = float(input("Digite o valor do depósito: "))
             if valor > 0:
                 conta["saldo"] += valor
@@ -24,20 +19,15 @@ def deposito(cadastro):
                 print("Valor do depósito é inválido.")
                 input("Pressione enter para continuar_")
 
-
 def saque(cadastro):
     cpf_digitado, busca = buscas.pesquisar_cpf(cadastro)
-    if not busca:
-        print("CPF não possui cadastro")
+    conta_digitada = input("Digite o número da conta: ")
+    conta = buscas.encontrar_conta(busca["conta"], conta_digitada)
+        
+    if conta is None:
+        print("Conta não encontrada")
         input("Pressione enter para continuar_")
     else:
-        conta_digitada = input("Digite o número da conta: ")
-        conta = encontrar_conta(busca["contas"], conta_digitada)
-        
-        if conta is None:
-            print("Conta não encontrada")
-            input("Pressione enter para continuar_")
-        else:
             saques_realizados = sum(1 for transacao in conta.get("extrato", []) if "Saque" in transacao)
             if saques_realizados >= LIMITE_SAQUE:
                 print("Você atingiu o limite de saque.")
@@ -56,14 +46,11 @@ def saque(cadastro):
                     input("Pressione enter para continuar_")
 def extrato(cadastro):
     cpf_digitado, busca = buscas.pesquisar_cpf(cadastro)
-    if not busca:
-        print("CPF não possui cadastro")
-    else:
-        conta_digitada = input("Digite o número da conta: ")
-        conta = encontrar_conta(busca["conta"], conta_digitada)
-        if not conta:
+    conta_digitada = input("Digite o número da conta: ")
+    conta = buscas.encontrar_conta(busca["conta"], conta_digitada)
+    if not conta:
             print("Conta não encontrada")
-        else:
+    else:
             print("====================== Extrato =======================")
             print(f"Extrato da conta {conta['conta']} - Saldo: R$ {conta['saldo']:.2f}")
             print("Histórico de transações:")
@@ -72,8 +59,3 @@ def extrato(cadastro):
             print("======================================================")
             input("Pressione enter para continuar_")
 
-def encontrar_conta(contas, numero_conta):
-    for conta in contas:
-        if conta["conta"] == numero_conta:
-            return conta
-    return None

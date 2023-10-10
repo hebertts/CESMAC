@@ -41,8 +41,10 @@ def criar_conta(cadastro):
         nova_conta = {
             "agencia": agencia,
             "conta": conta,
+            "saldo": 0,
             "extrato": []
         }
         busca["conta"].append(nova_conta)
         input(f"Conta: {conta} cadastrada com sucesso.\nPressione Enter para continuar_")
         return nova_conta
+
