@@ -1,10 +1,10 @@
 VALOR_MAXIMO_SAQUE = 1000
 LIMITE_SAQUE = 5
+
 import buscas
-def deposito(cadastro):
-    cpf_digitado, busca = buscas.pesquisar_cpf(cadastro)
+def deposito(cadastro,cpf):
     conta_digitada = input("Digite o número da conta: ")
-    conta = buscas.encontrar_conta(busca["conta"], conta_digitada)
+    conta = buscas.encontrar_conta(cadastro[cpf]["conta"], conta_digitada)
     if not conta:
         print("Conta não encontrada")
         input("Pressione enter para continuar_")
@@ -19,10 +19,9 @@ def deposito(cadastro):
                 print("Valor do depósito é inválido.")
                 input("Pressione enter para continuar_")
 
-def saque(cadastro):
-    cpf_digitado, busca = buscas.pesquisar_cpf(cadastro)
+def saque(cadastro,cpf):
     conta_digitada = input("Digite o número da conta: ")
-    conta = buscas.encontrar_conta(busca["conta"], conta_digitada)
+    conta = buscas.encontrar_conta(cadastro[cpf]["conta"], conta_digitada)
         
     if conta is None:
         print("Conta não encontrada")
@@ -44,10 +43,9 @@ def saque(cadastro):
                 else:
                     print("Valor do saque é inválido ou superior ao saldo disponível.")
                     input("Pressione enter para continuar_")
-def extrato(cadastro):
-    cpf_digitado, busca = buscas.pesquisar_cpf(cadastro)
+def extrato(cadastro,cpf):
     conta_digitada = input("Digite o número da conta: ")
-    conta = buscas.encontrar_conta(busca["conta"], conta_digitada)
+    conta = buscas.encontrar_conta(cadastro[cpf]["conta"], conta_digitada)
     if not conta:
             print("Conta não encontrada")
     else:
@@ -58,4 +56,26 @@ def extrato(cadastro):
                 print(transacao)
             print("======================================================")
             input("Pressione enter para continuar_")
+
+def menu_banco(cpf,cadastro):
+    menu_opcoes = {1:"Sacar",2:"Depositar",3:"Extrato",4:"Sair"}
+    escolha = 0  # Inicialize a variável escolha
+    while escolha != len(menu_opcoes):
+        primeiro_nome = cadastro[cpf]["nome"].split()  # Pega o primeiro nome
+        print('-' * 40)
+        print(f'| Olá, {primeiro_nome}'.ljust(39) + '|')
+        print(f'| Conta        {cadastro[cpf]["conta"]}'.ljust(39) + '|')
+        for chave, valor in menu_opcoes.items():
+            print(f'| {chave}: {valor}'.ljust(39) + '|')
+        print('-' * 40)
+        escolha = int(input('Digite o número desejado: '))
+
+        if escolha ==1:
+            saque(cadastro,cpf)
+        elif escolha == 2:
+            deposito(cadastro,cpf)
+        elif escolha == 3:
+            extrato(cadastro,cpf)
+        elif escolha == 4:
+            print('Saindo...')
 
