@@ -1,5 +1,6 @@
 from datetime import datetime
 import time
+from searches import clear_screen
 MAX_WITHDRAWAL_AMOUNT  = 1000
 WITHDRAWAL_LIMIT  = 5
 currente_date = datetime.now()
@@ -61,8 +62,11 @@ def withdrawal(account):
 from operator import itemgetter
 
 def statement(account):
+    clear_screen()
+    balance_br = f"{account['balance']:_.2f}"
+    balance_br = balance_br.replace('.',',').replace('_','.')
     print("====================== Extrato =======================")
-    print(f"Extrato da conta {account['account']} - Saldo: R$ {account['balance']:.2f}")
+    print(f"Extrato da conta {account['account']} - Saldo: R$ {balance_br}")
 
     sorted_statement = sorted(account["statement"], key=itemgetter('date'))
 

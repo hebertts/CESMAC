@@ -4,6 +4,22 @@ from datetime import datetime
 current_date = datetime.now()
 accounts=[0]
 
+def get_choice():
+    choice = int(input('Digite o número desejado: '))
+    while True:
+        try:
+            if  1 <= choice <= 3:  
+                return choice
+            else:
+                choice = int(input('Por favor, digite um número válido (1-3): '))
+                if  1 <= choice <= 3:  
+                    return choice
+            
+        except ValueError:
+                choice = int(input('Por favor, digite um número válido (1-3): '))
+
+
+
 def new_registration(registry):
     cpf_entered, loolup = searches.search_cpf(registry)
     if not cpf_entered: 
@@ -32,6 +48,7 @@ def new_registration(registry):
             salary_entered = verify_number(salary_entered)
             if salary_entered is None:
                 print('\n\nValor digitado é inválido, tente novamente')
+                time.sleep(2)
             else:
                 registry[cpf_entered] = {
                     "name": name_entered,
@@ -61,11 +78,13 @@ def create_account(registry, created_account):
         print('◌----------------◉-----------> ')
         print('Criação da conta'.rjust(30))
         print('-'*30)
-        agency  = input('''Escolha sua agência:
+        agency = 0
+        print('''Agências disponíveis:
 [1] - 01
 [2] - 02
-[3] - 03
-=>  ''').zfill(2)
+[3] - 03''')
+        agency = get_choice()
+        str(agency).zfill(2)
         name = lookup['name']
         last_account = max(accounts) + 1
         accounts.append(last_account)

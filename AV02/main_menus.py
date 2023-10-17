@@ -2,7 +2,7 @@ import bank
 import people
 import time
 import getpass
-import msvcrt
+
 from searches import check_key,clear_screen,system_name
 from prettytable import PrettyTable
 
@@ -16,14 +16,14 @@ def get_choice():
             return int(choice)
         else:
             print('Por favor, digite um número válido.')
+            time.sleep(1)
 
 
 
 
 def main_menu():
-    menu_options = {1:"Fazer cadastro",2:"Criar Conta",3:"Abra sua conta",4:"Sair"}
     choice = 0  
-    while choice!=len(menu_options):
+    while choice!=4:
         clear_screen()
         print('+'+'-'*38+'+')
         print("|           Menu Principal             |")
@@ -53,16 +53,15 @@ def main_menu():
             print('Saindo...')
 
 def bank_menu(cpf, lookup):
-    bank_options = {1: "Sacar", 2: "Depositar", 3: "Extrato", 4: "Sair"}
     choice = 0
     if 'password' not in lookup or not lookup['password']:
         print('Seja bem-vindo(a), essa é a sua primeira vez acessando o CESM Bank')
         password_new = get_password("Digite sua senha: ")
         password_confirmation = get_password("Confirme sua senha: ")
         while password_new != password_confirmation:
+            clear_screen()
             print('As senhas digitadas não são iguais')
             password_new = get_password("Digite sua senha: ")
-            print('Confirme sua senha')
             password_confirmation = get_password("Confirme sua senha: ")
         if password_confirmation == password_new:
             lookup['password'] = password_new
@@ -73,7 +72,7 @@ def bank_menu(cpf, lookup):
     else:
         password_new = get_password("Digite sua senha: ")
         if password_new == lookup['password']:
-            while choice != len(bank_options):
+            while choice != 4:
                 clear_screen()
                 print('+'+'-'*38+'+')
                 print("|              CESM Bank               |")
@@ -101,6 +100,9 @@ def bank_menu(cpf, lookup):
                     bank.statement(account_data)
                 elif choice == 4:
                     print('Saindo...')
+        else:
+            print('senha errada')
+            time.sleep(2)
 
 def get_password(prompt="Digite sua senha: "):
     os_system = system_name()
@@ -108,6 +110,7 @@ def get_password(prompt="Digite sua senha: "):
         senha = getpass.getpass(prompt)
         return senha
     elif os_system == 'nt':  # Windows
+        import msvcrt
         print(prompt, end="", flush=True)
         senha = b""
         while True:
