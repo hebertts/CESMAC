@@ -1,8 +1,9 @@
 import searches
 import time
+import sql_operations
 from datetime import datetime
 current_date = datetime.now()
-accounts=[0]
+import random
 
 def get_choice():
     choice = int(input('Digite o número desejado: '))
@@ -20,12 +21,12 @@ def get_choice():
 
 
 
-def new_registration(registry):
-    cpf_entered, loolup = searches.search_cpf(registry)
+def new_registration():
+    cpf_entered, loolup = searches.search_cpf()
     if not cpf_entered: 
         print('Cadastro não poderá ser efetuado.')
         return
-    elif loolup:
+    elif loolup !=  'vazio':
         print('CPF existente')
         time.sleep(3)
     else:
@@ -36,7 +37,7 @@ def new_registration(registry):
         name_entered = input("Digite seu nome completo: ")
         searches.verification_name(name_entered)
         birth_date_entered  = input("Digite a data de nascimento (dd/MM/yyyy): ")
-        birth_date_entered  = searches.verify_birth_date(birth_date_entered )
+        birth_date_entered  = searches.verify_birth_date(birth_date_entered)
         birth_date_entered  = datetime.strptime(birth_date_entered , '%d/%m/%Y')
         
         age_difference = current_date.year - birth_date_entered.year
@@ -50,59 +51,49 @@ def new_registration(registry):
                 print('\n\nValor digitado é inválido, tente novamente')
                 time.sleep(2)
             else:
-                registry[cpf_entered] = {
-                    "name": name_entered,
-                    "birth_date": birth_date_entered,
-                    "salary": salary_entered,
-                    "account":[]
-                }
+                email = input("Digite o seu email: ")
+                dependent = input("Você tem dependentes('S' ou 'N')? ")
+                dependent = 1 if dependent == 'S' else  0
+                birth_date_entered = birth_date_entered.strftime('%Y-%m-%d')
+                sql_operations.insert_registry(cpf_entered,name_entered,birth_date_entered,salary_entered,dependent,email)
                 print('-'*30)
                 input('\n\nCadastro efetuado com sucesso\nPressione Enter para continuar_')
         else:
             print("\n\nVocê é menor de idade, infelizmente o cadastro não será efetuado.")
             time.sleep(3)
             
-def create_account(registry, created_account):
-    cpf, lookup = searches.check_key(registry, "registry")
-    if not cpf:
-        print('A conta não pode ser criada')
-        time.sleep(3)
-    elif not lookup:
-        print("CPF não possui cadastro. Cadastre-se primeiro.")
-        time.sleep(3)
-    elif cpf in created_account:
-        print('CPF já possui conta')
-        time.sleep(3)
-    else:
+def create_account():
+    cpf, lookup = searches.check_key("account")
+    if lookup[1] == None:
         searches.clear_screen()
         print('◌----------------◉-----------> ')
         print('Criação da conta'.rjust(30))
         print('-'*30)
-        agency = 0
-        print('''Agências disponíveis:
-[1] - 01
-[2] - 02
-[3] - 03''')
-        agency = get_choice()
-        str(agency).zfill(2)
-        name = lookup['name']
-        last_account = max(accounts) + 1
-        accounts.append(last_account)
-        account = str(last_account).zfill(4)
-        account = account[:3] + '-' + account[3:]
+        account = random.randint(1, 99999)
+        account = str(min(account,99999))
+        account = account.zfill(5)
+        account = account[:4] + '-' + account[4:]
+        print(account)
+        result = sql_operations.search_account_databese(account)
+        while result != 'vazio':
+            account  = [random.randint(1, 100) for _ in range(4)]
+            account = str(account)
+            account = account[:3] + '-' + account[3:]
+            result = sql_operations.search_account_databese(account)   
+        if result =='vazio':  
+            creat_account  = datetime.strftime(current_date , '%Y-%m-%d')
+            sql_operations.insert_accounts_database(account,0,creat_account,cpf,f'newpass{account}')
+            print('-'*30)
+            input(f"\n\nConta: {account} cadastrada com sucesso.\nPressione Enter para continuar_")
+
+    elif lookup == 'vazio': 
+        print('A conta não pode ser criada, CPF não cadastrado')
         
-        created_account[cpf] = {
-            "name": name,
-            "agency": agency,
-            "account": account,
-            "balance": 0.0,
-            "password":"",
-            "statement": []
-        }
-        print('-'*30)
-        lookup["account"] = {"agency": agency,
-            "account": account} 
-        input(f"\n\nConta: {account} cadastrada com sucesso.\nPressione Enter para continuar_")
+        time.sleep(3)
+    else:
+        print("CPF já possui uma conta.")
+        time.sleep(3)
+    print(lookup)
 
 def verify_number(number):
     while True:

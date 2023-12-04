@@ -1,20 +1,22 @@
 import time
+import sql_operations
 from os import name,system
 from datetime import datetime
-def search_cpf(registry):
+
+def search_cpf():
     while True:
         cpf_entered = input('Digite seu CPF (somente números): ').strip()
         if verification_cpf(cpf_entered):
-            lookup = registry.get(cpf_entered)
+            lookup = sql_operations.search_cpf_database(cpf_entered)
             return cpf_entered, lookup
 
-def check_key(registry, search_type):
-    while True:
+def check_key(search_type):
+     while True:
         if search_type == 'registry':
             cpf_entered = input('Digite seu CPF (somente números): ').strip()
             if verification_cpf(cpf_entered):
-                if cpf_entered in registry:
-                    lookup = registry.get(cpf_entered)
+                if cpf_entered is not 'vazio' :
+                    lookup = sql_operations.search_cpf_database(cpf_entered)
                     return cpf_entered, lookup
                 else:
                     print('CPF não cadastrado')
@@ -23,12 +25,10 @@ def check_key(registry, search_type):
         elif search_type == 'account':
             cpf_entered = input("Digite seu CPF (somente números): ").strip()
             if verification_cpf(cpf_entered):
-                lookup = registry.get(cpf_entered)  
+                lookup = sql_operations.select_account_database(cpf_entered)
                 if lookup:
                     return cpf_entered, lookup
                 else:
-                    print('CPF não possui conta')
-                    
                     return False, None
 
 

@@ -2,12 +2,12 @@ import bank
 import people
 import time
 import getpass
-
+import sql_operations
+from hashlib import sha256
 from searches import check_key,clear_screen,system_name
 from prettytable import PrettyTable
 
-registry={}
-created_accounts = {}
+
 
 def get_choice():
     while True:
@@ -38,11 +38,11 @@ def main_menu():
         print(menu_principal)
         choice = get_choice()
         if choice == 1:
-            people.new_registration(registry)
+            people.new_registration()
         elif choice == 2:
-            people.create_account(registry,created_accounts)
+            people.create_account()
         elif choice == 3:
-            cpf,lookup = check_key(created_accounts,"account")
+            cpf,lookup = check_key("account")
             if not cpf:
                 print('CPF não possui conta')
                 time.sleep(3)
@@ -51,10 +51,11 @@ def main_menu():
                 time.sleep(3)
         elif choice == 4:
             print('Saindo...')
+            sql_operations.close_sql()
 
 def bank_menu(cpf, lookup):
     choice = 0
-    if 'password' not in lookup or not lookup['password']:
+    if 'newpass'  in lookup[2]:
         print('Seja bem-vindo(a), essa é a sua primeira vez acessando o CESM Bank')
         password_new = get_password("Digite sua senha: ")
         password_confirmation = get_password("Confirme sua senha: ")
@@ -64,24 +65,26 @@ def bank_menu(cpf, lookup):
             password_new = get_password("Digite sua senha: ")
             password_confirmation = get_password("Confirme sua senha: ")
         if password_confirmation == password_new:
-            lookup['password'] = password_new
+            sql_operations.update_password(password_new,cpf)
             print('Senha salva com sucesso')
             print('O sistema irá voltar para o Menu principal para liberar o acesso')
             time.sleep(3)
 
     else:
         password_new = get_password("Digite sua senha: ")
-        if password_new == lookup['password']:
+        if password_new == lookup[2]:
             while choice != 4:
+                lookup = sql_operations.select_account_database(cpf) 
                 clear_screen()
+                print(lookup)
                 print('+'+'-'*38+'+')
                 print("|              CESM Bank               |")
                 print('+'+'-'*38+'+')
-                first_name = lookup['name'].split()
+                first_name = lookup[0].split()
                 account_data = lookup
                 print('+'+'-'*38+'+')
                 print(f'| Olá, {first_name[0]}'.ljust(39) + '|')
-                print('| Conta' + f'{lookup["account"]}'.rjust(32) + '|')
+                print('| Conta' + f'{lookup[1]}'.rjust(32) + '|')
                 menu_principal = PrettyTable(['      OPÇÃO      ', '       ITEM     '])
                 menu_principal.align['OPÇÃO'] = 'c'
                 menu_principal.align['ITEM'] ='l'
