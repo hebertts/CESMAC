@@ -51,8 +51,16 @@ def new_registration():
                 print('\n\nValor digitado é inválido, tente novamente')
                 time.sleep(2)
             else:
-                email = input("Digite o seu email: ")
+                email = input("Digite o seu email ou pressione enter para pular: ")
+                if email.strip():
+                    while True:
+                        if email.endswith('@yahoo.com') or email.endswith('@gmail.com') or email.endswith('@outlook.com'):
+                            break
+                        else:
+                            email = input("Por favor, insira um email válido: ")
                 dependent = input("Você tem dependentes('S' ou 'N')? ")
+                while dependent not in ['S', 'N']:
+                    dependent = input("Entrada inválida. Você tem dependentes? ('S' ou 'N'): ").upper()
                 dependent = 1 if dependent == 'S' else  0
                 birth_date_entered = birth_date_entered.strftime('%Y-%m-%d')
                 sql_operations.insert_registry(cpf_entered,name_entered,birth_date_entered,salary_entered,dependent,email)

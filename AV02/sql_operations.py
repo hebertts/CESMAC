@@ -59,9 +59,9 @@ def insert_statement_database(Account_client, Transaction_date, Typo, value_stat
 
 def insert_loan_database(total_value, date_loan, payment_term, account_loan,payment_mounth):
     try:
-        loan_sql = '''INSERT INTO loan(total_value, date_loan, payment_term, account_loan)
-                      VALUES (%s, %s, %s, %s)'''
-        cursor.execute(loan_sql, (total_value, date_loan, payment_term, account_loan))
+        loan_sql = '''INSERT INTO loan(total_value, date_loan, payment_term, account_loan,status_pay)
+                      VALUES (%s, %s, %s, %s,%s)'''
+        cursor.execute(loan_sql, (total_value, date_loan, payment_term, account_loan,0))
         id_loan = cursor.lastrowid  
 
        
@@ -124,10 +124,24 @@ def search_account_databese(account):
 
 def search_client_database(cpf):
     try:
-        sql = f'''select client_registry.Name_client, client_registry.Birth_date,
-        client_registry.Salary,client_registry.Dependent,client_registry.Email,accounts.Balance from client_registry
-        inner join accounts ON client_registry.CPF = accounts.CPF 
-        where client_registry.CPF = {cpf};'''
+        sql = f'''SELECT 
+    client_registry.Name_client, 
+    client_registry.Birth_date,
+    client_registry.Salary, 
+    client_registry.Dependent,
+    client_registry.Email,
+    accounts.Balance,
+    accounts.limit_credit,
+    COALESCE(loan.total_value, 0) AS total_value
+FROM 
+    client_registry
+INNER JOIN 
+    accounts ON client_registry.CPF = accounts.CPF
+LEFT JOIN 
+    loan ON accounts.Account_client = loan.Account_loan AND loan.status_pay = 0
+WHERE 
+    client_registry.CPF = {cpf}
+        '''
         cursor.execute(sql)
         result = cursor.fetchone()
         return 'vazio' if result == None else result
@@ -166,7 +180,7 @@ def update_limit(value,account):
 def search_loan_database(account):
     try:
         sql = '''SELECT loan.id_loan, loan.amount_paid,installments.id_installment,installments.installment_value,
-        installments.due_date,installments.payment_status,loan.total_value   from loan
+        installments.due_date,installments.payment_status,loan.total_value,loan.status_pay   from loan
         INNER JOIN installments ON loan.id_loan = installments.id_loan WHERE loan.account_loan = %s'''
         cursor.execute(sql,(account,))
         result = cursor.fetchall()
@@ -180,7 +194,9 @@ def search_loan_database(account):
                 'installments_value': row[3],
                 'due_date': row[4],
                 'status': row[5]  ,# Adjusted index for payment_status
-                'value_total': row[6]
+                'value_total': row[6],
+                'status_loan': row[7]
+
             }  
             installments_data.append(info)
         return {'installments': installments_data} if installments_data else 'vazio'

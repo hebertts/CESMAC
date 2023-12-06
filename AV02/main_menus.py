@@ -52,7 +52,7 @@ def main_menu():
             people.create_account()
         elif choice == 3:
             cpf,lookup = check_key("account")
-            if not cpf:
+            if lookup == 'vazio':
                 print('CPF não possui conta')
                 time.sleep(3)
             else:
@@ -65,6 +65,7 @@ def main_menu():
 
 def bank_menu(cpf, lookup):
     choice = 0
+ 
     if 'newpass'  in lookup[2]:
         print('Seja bem-vindo(a), essa é a sua primeira vez acessando o CESM Bank')
         password_new = get_password("Digite sua senha: ")
@@ -110,7 +111,6 @@ def bank_menu(cpf, lookup):
                 menu_principal.add_row(['8','Sair'])
                 print(menu_principal)
                 choice = get_choice()
-
                 if choice == 1:
                     bank.withdrawal(account_data)
                 elif choice == 2:
@@ -121,17 +121,24 @@ def bank_menu(cpf, lookup):
                         clear_screen()
                         result = sql_operations.search_client_database(cpf)
                         print(f'Nome: {result[0]}')
+                        date_string = result[1]
                         
-                        date = result[1].strftime('%d/%m/%Y')
-                        print(f'Data de Nascimento: {date}')
-                        print(f'Salário: {float(result[2])}')
+                        formatted_date = date_string.strftime('%d/%m/%Y')
+                        print(f'Data de Nascimento: {formatted_date}')
+                        salary_br = format(float(result[2]))
+                        print(f'Salário: {salary_br}')
                         dependent = 'Sim' if result[3] == 1 else "Não" 
                         print(f'Dependente: {dependent}')
                         print(f'Email: {result[4]}')
-                        print(f'Saldo na conta: {result[5]}')
+                        saldo_br = bank.format_br(result[5])
+                        print(f'Saldo na conta: R$ {saldo_br}')
+                        limit_credit_br = bank.format_br(result[6])
+                        print(f'Limite de empréstimo até R$ {limit_credit_br}')
+                        limmit_used = bank.format_br(result[7])
+                        print(f'Empréstimo recente: {limmit_used}') if float(result[7]) > 0.0 else None
                         input('Pressione Enter para continuar_')
                 elif choice == 4:
-                    bank.upper_limit_credit(account_data,cpf)
+                    bank.upper_limit_credit(account_data)
                 elif choice == 5:
                     bank.loan(account_data)
                 elif choice == 6:
