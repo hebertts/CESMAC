@@ -6,6 +6,15 @@ import sql_operations
 from hashlib import sha256
 from searches import check_key,clear_screen,system_name
 from prettytable import PrettyTable
+from datetime import datetime
+
+currente_date  =datetime.now()
+
+
+def criptografar_senha(password):
+    password_crip = sha256(password.encode()).hexdigest()
+
+    return password_crip
 
 
 
@@ -49,6 +58,7 @@ def main_menu():
             else:
                 bank_menu(cpf,lookup)
                 time.sleep(3)
+          
         elif choice == 4:
             print('Saindo...')
             sql_operations.close_sql()
@@ -65,6 +75,7 @@ def bank_menu(cpf, lookup):
             password_new = get_password("Digite sua senha: ")
             password_confirmation = get_password("Confirme sua senha: ")
         if password_confirmation == password_new:
+            password_new = criptografar_senha(password_new)
             sql_operations.update_password(password_new,cpf)
             print('Senha salva com sucesso')
             print('O sistema irá voltar para o Menu principal para liberar o acesso')
@@ -72,26 +83,31 @@ def bank_menu(cpf, lookup):
 
     else:
         password_new = get_password("Digite sua senha: ")
+        password_new = criptografar_senha(password_new)
         if password_new == lookup[2]:
-            while choice != 4:
+            while choice != 8:
                 lookup = sql_operations.select_account_database(cpf) 
                 clear_screen()
-                print(lookup)
-                print('+'+'-'*38+'+')
-                print("|              CESM Bank               |")
-                print('+'+'-'*38+'+')
+           
+                print('+'+'-'*42+'+')
+                print("|              CESM Bank                   |")
+                print('+'+'-'*42+'+')
                 first_name = lookup[0].split()
                 account_data = lookup
-                print('+'+'-'*38+'+')
-                print(f'| Olá, {first_name[0]}'.ljust(39) + '|')
-                print('| Conta' + f'{lookup[1]}'.rjust(32) + '|')
+                print('+'+'-'*42+'+')
+                print(f'| Olá, {first_name[0]}'.ljust(43) + '|')
+                print('| Conta' + f'{lookup[1]}'.rjust(36) + '|')
                 menu_principal = PrettyTable(['      OPÇÃO      ', '       ITEM     '])
                 menu_principal.align['OPÇÃO'] = 'c'
                 menu_principal.align['ITEM'] ='l'
                 menu_principal.add_row(['1','Sacar'])
                 menu_principal.add_row(['2','Depositar'])
                 menu_principal.add_row(['3','Extrato'])
-                menu_principal.add_row(['4','Sair'])
+                menu_principal.add_row(['4','Crédito'])
+                menu_principal.add_row(['5','Empréstimo'])
+                menu_principal.add_row(['6','Pagar Parcela'])
+                menu_principal.add_row(['7','Informações pessoais'])
+                menu_principal.add_row(['8','Sair'])
                 print(menu_principal)
                 choice = get_choice()
 
@@ -101,7 +117,27 @@ def bank_menu(cpf, lookup):
                     bank.deposit(account_data)
                 elif choice == 3:
                     bank.statement(account_data)
+                elif choice == 7:
+                        clear_screen()
+                        result = sql_operations.search_client_database(cpf)
+                        print(f'Nome: {result[0]}')
+                        
+                        date = result[1].strftime('%d/%m/%Y')
+                        print(f'Data de Nascimento: {date}')
+                        print(f'Salário: {float(result[2])}')
+                        dependent = 'Sim' if result[3] == 1 else "Não" 
+                        print(f'Dependente: {dependent}')
+                        print(f'Email: {result[4]}')
+                        print(f'Saldo na conta: {result[5]}')
+                        input('Pressione Enter para continuar_')
                 elif choice == 4:
+                    bank.upper_limit_credit(account_data,cpf)
+                elif choice == 5:
+                    bank.loan(account_data)
+                elif choice == 6:
+                    bank.pay_loan(account_data,cpf)
+
+                elif choice == 8:
                     print('Saindo...')
         else:
             print('senha errada')

@@ -43,7 +43,7 @@ from operator import itemgetter
 
 def search_statement_database(account='4989-0'):
     try:
-        sql = 'SELECT Descricao, value_statement, Transaction_date FROM bank_statement WHERE Account_client = %s'
+        sql = 'SELECT Typo, value_statement, Transaction_date FROM bank_statement WHERE Account_client = %s'
         cursor.execute(sql, (account,))
         result = cursor.fetchall()
         
@@ -51,7 +51,7 @@ def search_statement_database(account='4989-0'):
         for row in result:
             transaction = {
                 'Transaction_date': row[2],
-                'Descricao': row[0],
+                'Typo': row[0],
                 'value_statement': row[1]
             }
             statement_data.append(transaction)
@@ -66,9 +66,9 @@ def Statement():
         balance_br = f"{float(0):_.2f}"
         balance_br = balance_br.replace('.', ',').replace('_', '.')
         print("================= ====== Extrato =======================")
-        print(f"Extrato da conta {'4989-0'} - Saldo: R$ {balance_br}")
+        print(f"Extrato da conta {account[1]} - Saldo: R$ {balance_br}")
         
-        account = search_statement_database("4989-0")
+        account = search_statement_database(account[1])
         sorted_statement = sorted(account['statement'], key=itemgetter('Transaction_date'))
         current_period = None
         
@@ -79,7 +79,7 @@ def Statement():
             
             amount_br = f"{float(transaction['value_statement']):_.2f}"
             amount_br = amount_br.replace('.', ',').replace('_', '.')
-            print(f"{transaction['Descricao']:<30} R$ {amount_br}")
+            print(f"{transaction['Typo']:<30} R$ {amount_br}")
         
         print("=============== =====================================")
         input("\nPressione enter para continuar_")
@@ -101,13 +101,36 @@ if account_info[1] == None:
 
 def search_statement_database(account):
     try:
-        sql = 'SELECT Descricao, value_statement, Transaction_date FROM bank_statement WHERE Account_client = %s ORDER BY Transaction_date'
+        sql = 'SELECT Typo, value_statement, Transaction_date FROM bank_statement WHERE Account_client = %s ORDER BY Transaction_date'
         cursor.execute(sql, (account,))
         result = cursor.fetchall()
         return result if result else 'vazio'
     except Exception as e:
         print(f"Erro ao buscar extrato: {e}")
         return 'vazio'    
+import hashlib
+
+def criptografar_senha(senha):
+    # Usando SHA256 para criar um hash da senha
+    hash_senha = hashlib.sha256(senha.encode()).hexdigest()
+    return hash_senha
+
+def descriptografar_senha(hash_senha):
+    # Não é possível descriptografar um hash, então aqui apenas retornamos o hash
+    return hash_senha
+
+# Exemplo de uso:
+senha_digitada = input("Digite sua senha: ")
+senha_criptografada = criptografar_senha(senha_digitada)
+print("Senha criptografada:", senha_criptografada)
+
+# Para descriptografar, você normalmente não pode recuperar a senha original a partir do hash,
+# mas pode verificar se uma senha digitada coincide com o hash guardado.
+senha_digitada_nova = input("Digite a senha novamente: ")
+if criptografar_senha(senha_digitada_nova) == senha_criptografada:
+    print("As senhas coincidem.")
+else:
+    print("As senhas não coincidem.")
 
 
 conexao.close()  # Feche a conexão quando terminar de usar

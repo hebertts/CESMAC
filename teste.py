@@ -1,22 +1,13 @@
-import msvcrt
+def price(n,valor_emprestimo):
+    taxa_n = 0.1 / n
+    pmt = (valor_emprestimo * taxa_n)/(1 - (1+taxa_n)**-n)
+    return pmt
+valor = price(12,10000)
+print(f'{valor:.2f}')
+def credito_conta(renda,movimentacao):
+    fator = 3.5
+    credito = (renda + movimentacao) * fator
+    return credito
+credito = credito_conta(400,3000)
+print(credito)
 
-def get_password(prompt="Digite sua senha: "):
-    print(prompt, end="", flush=True)
-    senha = b""
-    while True:
-        char = msvcrt.getch()
-        if char == b'\r' or char == b'\n':
-            print()
-            break
-        elif char == b'\x08':  # Backspace
-            if senha:
-                senha = senha[:-1]
-                print("\b \b", end="", flush=True)
-        else:
-            senha += char
-            print("*", end="", flush=True)
-    return senha.decode('utf-8')
-
-# Usando a função para obter a senha mascarada
-senha = get_password()
-print("Senha digitada:", senha)  # A senha não é exibida no terminal
